@@ -8,12 +8,18 @@ class Lifter
   def initialize(name, lift_total)
     @name = name
     @lift_total = lift_total
-    @@all << self
+    self.class.all << self
   end
+
+  def self.all
+    @@all
+  end
+
   def sign_up(cost, gym)
     #Create membership
-    Membership.new(cost, self, gym)
+    Membership.new(self, gym, cost)
   end
+
   def memberships
     #Access membership => [memberships]
     #Select all memberships for specific member
@@ -21,7 +27,6 @@ class Lifter
       #compare whether or not lifter property == this lifter
       m.lifter == self
     end
-
   end
 
   def gyms
@@ -34,8 +39,21 @@ class Lifter
     end
   end
 
-  def self.all 
-    @@all
+  def self.average_lift
+    total_weight = 0
+    all_lifters =  self.all.inject(0) do |result, l|
+    result + l.lift_total
+    end
+    all_lifters / self.all.size
   end
 
+  def total_cost
+    total_mem_sum = 0
+    self.memberships.select do |m|
+      total_mem_sum += m.cost
+    end
+    total_mem_sum
+  end
+
+# arr.inject(0.0) { |sum, el| sum + el } / arr.size
 end
